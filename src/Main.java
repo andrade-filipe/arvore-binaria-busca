@@ -47,6 +47,12 @@ public class Main {
         // Classificar como binária de busca ou binária
         quebraLinha("Método 6 - Classificar Árvore");
 
+        if(BST.isBinarySearchTree()){
+            System.out.println("É Árvore binária de BUSCA");
+        } else {
+            System.out.println("Não é Árvore Binária de BUSCA");
+        }
+
         // Quantos nós tem somente um filho
         quebraLinha("Método 7 - Localizar Nós com somente um filho");
 

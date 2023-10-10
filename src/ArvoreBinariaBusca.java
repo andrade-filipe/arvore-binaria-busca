@@ -19,13 +19,11 @@ public class ArvoreBinariaBusca<Key extends Comparable<Key>, Value> {
         private Value val;         // associated data
         private Node left, right;  // left and right subtrees
         private int size;          // number of nodes in subtree
-        private int degree;        // number of childs the node has
 
         public Node(Key key, Value val, int size) {
             this.key = key;
             this.val = val;
             this.size = size;
-            this.degree = 0;
         }
     }
 
@@ -488,7 +486,6 @@ public class ArvoreBinariaBusca<Key extends Comparable<Key>, Value> {
         return sb.toString();
     }
 
-
     /**
      * Método 3 - Tamanho da árvore de forma recursiva
      * counting the number of nodes, but with recursion
@@ -510,16 +507,6 @@ public class ArvoreBinariaBusca<Key extends Comparable<Key>, Value> {
      */
     public boolean isBinarySearchTree() {
         return isBST();
-    }
-
-    public boolean isOnlyBinaryTree() {
-        return isBinaryTree(root);
-    }
-
-    private boolean isBinaryTree(Node node){
-        if (node == null) return true;
-        int countChild = 0;
-        return isBinaryTree(node.left) && isBinaryTree(node.right);
     }
 
     /**
