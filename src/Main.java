@@ -26,6 +26,8 @@ public class Main {
         //Desenho da Árvore
         quebraLinha("Método 2 - Identação da Árvore");
 
+        BST.printTree();
+
         //Numero de Nós
         quebraLinha("Método 3 - Tamanho da Árvore");
 

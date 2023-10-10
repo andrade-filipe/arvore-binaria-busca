@@ -1,3 +1,4 @@
+
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
@@ -161,7 +162,6 @@ public class ArvoreBinariaBusca<Key extends Comparable<Key>, Value> {
             return 0;
         }
     }
-
 
     /*
      * READING, INSERTING AND DELETING METHODS
@@ -437,6 +437,59 @@ public class ArvoreBinariaBusca<Key extends Comparable<Key>, Value> {
     }
 
     /**
+     * MÉTODO 2 - Imprimir Desenho da árvore
+     * Imprime todos os elementos da arvore identados
+     */
+    public void printTree(){
+        System.out.println(treeStringBuilder(root));
+    }
+
+    private void treeStringBuilder(StringBuilder sb,
+                                   String padding,
+                                   String pointer,
+                                   Node node,
+                                   boolean hasRight){
+        if (node != null) {
+            sb.append("\n");
+            sb.append(padding);
+            sb.append(pointer);
+            sb.append(node.key);
+
+            StringBuilder paddingBuilder = new StringBuilder(padding);
+            if (hasRight) {
+                paddingBuilder.append("│  ");
+            } else {
+                paddingBuilder.append("   ");
+            }
+
+            String paddingForBoth = paddingBuilder.toString();
+            String pointerForRight = "└──";
+            String pointerForLeft = (node.right != null) ? "├──" : "└──";
+
+            treeStringBuilder(sb,paddingForBoth, pointerForLeft, node.left, node.right != null);
+            treeStringBuilder(sb,paddingForBoth, pointerForRight, node.right,false);
+        }
+    }
+
+    private String treeStringBuilder(Node root) {
+        if (root == null) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(root.key);
+
+        String pointerRight = "└──";
+        String pointerLeft = (root.right != null) ? "├──" : "└──";
+
+        treeStringBuilder(sb, "", pointerLeft, root.left, root.right != null);
+        treeStringBuilder(sb, "", pointerRight, root.right, false);
+
+        return sb.toString();
+    }
+
+
+    /**
      * Método 3 - Tamanho da árvore de forma recursiva
      * counting the number of nodes, but with recursion
      * @return number of nodes in the BST
@@ -465,16 +518,9 @@ public class ArvoreBinariaBusca<Key extends Comparable<Key>, Value> {
 
     private boolean isBinaryTree(Node node){
         if (node == null) return true;
+        int countChild = 0;
         return isBinaryTree(node.left) && isBinaryTree(node.right);
     }
-
-//    private boolean isBST(Node node, Key min, Key max) {
-//        if (node == null) return true;
-//        if (min != null && node.key.compareTo(min) <= 0) return false;
-//        if (max != null && node.key.compareTo(max) >= 0) return false;
-//        return isBST(node.left, min, node.key) && isBST(node.right, node.key, max);
-//    }
-
 
     /**
      * Método 7 - NÓS COM SOMENTE UM FILHO
@@ -513,75 +559,6 @@ public class ArvoreBinariaBusca<Key extends Comparable<Key>, Value> {
                 this.NODES_WITH_ONE_CHILD.add(node.key);
             }
         });
-    }
-
-    /**
-     * Returns the largest key in the symbol table less than or equal to {@code key}
-     *
-     * @param key the key
-     * @return the largest key in the symbol table less than or equal to {@code key}
-     * @throws NoSuchElementException   if there is no such key
-     * @throws IllegalArgumentException if {@code key} is {@code null}
-     */
-    public Key floor(Key key) {
-        if (key == null) { throw new IllegalArgumentException("método floor() recebeu uma chave vazia"); }
-        if (isEmpty()) { throw new NoSuchElementException("método floor() recebeu uma árvore vazia"); }
-        Node nodeWithlargestKey = floor(root, key);
-        if (nodeWithlargestKey == null) { throw new NoSuchElementException("método floor() encontrou um nó vazio"); }
-        else { return nodeWithlargestKey.key; } // retorna a MAIOR chave que se encontre no range: <= key
-    }
-
-    private Node floor(Node node, Key key) {
-        if (node == null) return null;
-        int compareKey = key.compareTo(node.key);
-        if (compareKey == 0) return node;
-        if (compareKey < 0) return floor(node.left, key);
-        Node t = floor(node.right, key);
-        if (t != null) return t;
-        else return node;
-    }
-
-    public Key floor2(Key key) {
-        Key largestKey = floor2(root, key, null);
-        if (largestKey == null) throw new NoSuchElementException("método floor() recebeu um valor muito pequeno");
-        else return largestKey;
-
-    }
-
-    private Key floor2(Node node, Key key, Key best) {
-        if (node == null) return best; // se o nó for vazio, retorna best
-        int compareKey = key.compareTo(node.key);
-        if (compareKey < 0) return floor2(node.left, key, best);
-        else if (compareKey > 0) return floor2(node.right, key, node.key);
-        else return node.key;
-    }
-
-    /**
-     * Returns the smallest key in the symbol table greater than or equal to {@code key}.
-     *
-     * @param key the key
-     * @return the smallest key in the symbol table greater than or equal to {@code key}
-     * @throws NoSuchElementException   if there is no such key
-     * @throws IllegalArgumentException if {@code key} is {@code null}
-     */
-    public Key ceiling(Key key) {
-        if (key == null) throw new IllegalArgumentException("argument to ceiling() is null");
-        if (isEmpty()) throw new NoSuchElementException("calls ceiling() with empty symbol table");
-        Node nodeWithSmallestKey = ceiling(root, key);
-        if (nodeWithSmallestKey == null) throw new NoSuchElementException("argument to ceiling() is too large");
-        else return nodeWithSmallestKey.key; // retorna a MENOR chave no range: >= key
-    }
-
-    private Node ceiling(Node node, Key key) {
-        if (node == null) return null;
-        int cmp = key.compareTo(node.key);
-        if (cmp == 0) return node;
-        if (cmp < 0) {
-            Node t = ceiling(node.left, key);
-            if (t != null) return t;
-            else return node;
-        }
-        return ceiling(node.right, key);
     }
 
     /**
