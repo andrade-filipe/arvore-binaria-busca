@@ -1,50 +1,19 @@
-import org.w3c.dom.Node;
-
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 public class AVLTree<Key extends Comparable<Key>, Value> {
 
-    private class Node {
-        private final Key key;           // sorted by key
-        private Value val;         // associated data
-        private Node left, right;  // left and right subtrees
-        private int balance;       // keeps track of the difference between the height of the childs
-        private int height;        // keeps track of the height of the node
-        private int size;          // number of nodes in subtree
-
-        public Node(Key key, Value val, int size, int balance, int height) {
-            this.key = key;
-            this.val = val;
-            this.size = size;
-            this.balance = balance;
-            this.height = height;
-        }
-
-        public boolean hasRightChild(){
-            return this.right != null;
-        }
-        public boolean hasLeftChild(){
-            return this.left != null;
-        }
-    }
     public Node root;             // root of BST
-    private ArrayList<Node> cache = new ArrayList<>();
-    private ArrayList<Key> NODES_WITH_ONE_CHILD = new ArrayList<>();
-    private ArrayList<Key> LRN_POS_ORDEM = new ArrayList<>();
-    private ArrayList<Key> NLR_PRE_ORDEM = new ArrayList<>();
-    private ArrayList<Key> LNR_IN_ORDEM = new ArrayList<>();
-
+    private final ArrayList<Node> cache = new ArrayList<>();
+    private final ArrayList<Key> NODES_WITH_ONE_CHILD = new ArrayList<>();
+    private final ArrayList<Key> LRN_POS_ORDEM = new ArrayList<>();
+    private final ArrayList<Key> NLR_PRE_ORDEM = new ArrayList<>();
+    private final ArrayList<Key> LNR_IN_ORDEM = new ArrayList<>();
     /**
      * Initializes an empty symbol table.
      */
     public AVLTree() {
     }
-
-    /*
-     * AUXILIARY METHODS
-     * these methods are used to create the other methods, they usually return raw information about the BST
-     */
 
     /**
      * Returns true if this symbol table is empty.
@@ -54,6 +23,11 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
     public boolean isEmpty() {
         return size() == 0;
     }
+
+    /*
+     * AUXILIARY METHODS
+     * these methods are used to create the other methods, they usually return raw information about the BST
+     */
 
     /**
      * Returns the number of key-value pairs in this symbol table.
@@ -132,14 +106,6 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
     private Node max(Node node) {
         if (node.right == null) return node;
         else return max(node.right);
-    }
-
-    public int getResultantBalance(){
-        return getResultantBalance(root);
-    }
-
-    private int getResultantBalance(Node root){
-        return root.left.height - root.right.height;
     }
 
     /**
@@ -272,10 +238,6 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
         if (compareLow <= 0 && compareHigh >= 0) list.add(node.key);
         if (compareHigh > 0) keys(node.right, list, low, high);
     }
-    /*
-     * READING, INSERTING AND DELETING METHODS
-     * the operations with the BST happen here
-     */
 
     /**
      * Returns the value associated with the given key.
@@ -288,6 +250,11 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
     public Value get(Key key) {
         return get(root, key);
     }
+    /*
+     * READING, INSERTING AND DELETING METHODS
+     * the operations with the BST happen here
+     */
+
     private Value get(Node node, Key key) {
         if (key == null) throw new IllegalArgumentException("método get() recebeu uma chave nula");
         if (node == null) return null;
@@ -303,9 +270,11 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
             return node.val;
         }
     }
+
     public Node getNode(Key key) {
         return getNode(root, key);
     }
+
     private Node getNode(Node node, Key key) {
         if (key == null) throw new IllegalArgumentException("método getNode() recebeu uma chave nula");
         if (node == null) return null;
@@ -346,7 +315,7 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
 
     private Node put(Node node, Key key, Value val) {
         if (node == null) {
-            return new Node(key, val, 1,0, 0);
+            return new Node(key, val, 1, 0, 0);
         }
         int compareKey = key.compareTo(node.key);
         if (compareKey < 0) {
@@ -389,6 +358,7 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
         root = deleteMax(root);
         assert check();
     }
+
     private Node deleteMax(Node node) {
         if (node.right == null) return node.left;
         node.right = deleteMax(node.right);
@@ -430,50 +400,6 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
     }
 
     /**
-     * ME parte 1
-     * Prints important information about the BST
-     * for study purposes
-     *
-     * @param key a key to a node of the tree
-     */
-    public void printNodeData(Key key) {
-        Node node = getNode(key);
-
-        System.out.println("Altura: " + height(node));
-        System.out.println("Nível: " + level(node));
-        System.out.println("Profundidade: " + level(node));
-
-        Node parentNode = root;
-
-        for (int i = 0; i < this.cache.size() - 1; i++) {
-            parentNode = this.cache.get(i);
-            if (parentNode.equals(node)) {
-                parentNode = this.cache.get(i - 1);
-            }
-        }
-
-        if (parentNode.right == node) {
-            System.out.println("Pai: " + parentNode.key.toString());
-            System.out.println("É filho direito");
-        } else if (parentNode.left == node) {
-            System.out.println("Pai: " + parentNode.key.toString());
-            System.out.println("É filho esquerdo");
-        } else if (parentNode == root) {
-            System.out.println("Não tem pai");
-            System.out.println("Nó raiz");
-        } else {
-            System.out.println("Erro");
-        }
-        System.out.println("Valor do Node: " + node.val);
-    }
-
-    /*
-     * SPECIAL DATA Methods
-     * data about the BST, but you can filter them
-     *
-     */
-
-    /**
      * MÉTODO 1 - PERCORRER ARVORE
      * Prints all 3 different types of traversals in a binary tree
      */
@@ -488,7 +414,11 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
         System.out.println("Pós-Ordem(LRN): " + this.LRN_POS_ORDEM);
     }
 
-    //ME PARTE 2
+    /*
+     * SPECIAL DATA Methods
+     * data about the BST, but you can filter them
+     *
+     */
 
     /**
      * MÉTODO 1 - PERCORRER ARVORE
@@ -510,6 +440,8 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
         nlr(node.right);
 
     }
+
+    //ME PARTE 2
 
     /**
      * MÉTODO 1 - PERCORRER ARVORE
@@ -608,76 +540,11 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
     }
 
     /**
-     * Método 3 - Tamanho da árvore de forma recursiva
-     * counting the number of nodes, but with recursion
-     *
-     * @return number of nodes in the BST
-     */
-    public int recursiveCount() {
-        return recursiveCount(root);
-    }
-
-    private int recursiveCount(Node node) {
-        if (node == null) {
-            return 0;
-        }
-        return 1 + recursiveCount(node.left) + recursiveCount(node.right);
-    }
-
-    /**
-     * MÉTODO 6 - CLASSIFICAR ÁRVORE
-     * Dizer se é binária ou Binária de busca
-     */
-    public boolean isBinarySearchTree() {
-        return isBST();
-    }
-
-    /**
-     * Método 7 - NÓS COM SOMENTE UM FILHO
-     * Prints an array with the nodes that have only one child
-     *
-     * @return array with all the keys of the nodes that have only one child
-     */
-    public String printNodesWithOnlyOneChild() {
-        nodesWithOnlyOneChild();
-        return this.NODES_WITH_ONE_CHILD.toString();
-    }
-
-    /**
-     * Método 7 - NÓS COM SOMENTE UM FILHO
-     * prints the size of the array nodesWithOnlyOneChild
-     *
-     * @return Integer with the count
-     */
-    public int sizeNodesWithOnlyOneChild() {
-        nodesWithOnlyOneChild();
-        return this.NODES_WITH_ONE_CHILD.size();
-    }
-
-    /**
-     * Método 7 - NÓS COM SOMENTE UM FILHO
-     * Maps all nodes with One child
-     */
-    private void nodesWithOnlyOneChild() {
-        this.NODES_WITH_ONE_CHILD.clear(); //making sure the array is empty
-        keys().forEach(key -> {
-            Node node = getNode(key);
-
-            boolean hasChild = !(node.left == null && node.right == null);
-            boolean andOnlyOneChild = node.left == null || node.right == null;
-            boolean hasOnlyOneChild = hasChild && andOnlyOneChild;
-
-            if (hasOnlyOneChild) {
-                this.NODES_WITH_ONE_CHILD.add(node.key);
-            }
-        });
-    }
-
-    /**
      * Mantém os dados da árvore atualizados para saber quando balancear a árvore
+     *
      * @param node nó que está sendo inserido, deletado ou sofrendo rotação
      */
-    private void update(Node node){
+    private void update(Node node) {
         int leftNodeHeight = (node.left == null) ? -1 : node.left.height;
         int rightNodeHeight = (node.right == null) ? -1 : node.right.height;
 
@@ -688,18 +555,19 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
 
     /**
      * Aplica o algoritmo correto dependendo do caso de balanceamento da árvore
+     *
      * @param node nó desbalanceado
      * @return o novo nó que vai ocupar o lugar
      */
-    private Node balance(Node node){
-        if(node.balance == -2){
-            if(node.left.balance <= 0){
+    private Node balance(Node node) {
+        if (node.balance == -2) {
+            if (node.left.balance <= 0) {
                 return leftLeftCase(node);
             } else {
                 return leftRightCase(node);
             }
-        } else if(node.balance == 2){
-            if(node.right.balance >= 0){
+        } else if (node.balance == 2) {
+            if (node.right.balance >= 0) {
                 return rightRightCase(node);
             } else {
                 return rightLeftCase(node);
@@ -708,11 +576,11 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
         return node;
     }
 
-    public int balanceFactor(){
+    public int balanceFactor() {
         return balanceFactor(this.root);
     }
 
-    private int balanceFactor(Node root){
+    private int balanceFactor(Node root) {
         assert root.right != null;
         assert root.left != null;
         return root.right.height - root.left.height;
@@ -738,6 +606,7 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
 
     /**
      * Algoritmo de rotação para a esquerda de uma subárvore
+     *
      * @param oldRoot o nó que não está balanceado
      * @return nova raiz da subárvore
      */
@@ -753,6 +622,7 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
 
     /**
      * Algoritmo de rotação para a direita de uma subárvore
+     *
      * @param oldRoot o nó que não está balanceado
      * @return nova raiz da subárvore
      */
@@ -777,16 +647,16 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
         return isBST() && isSizeConsistent() && isRankConsistent() && isBalanced();
     }
 
-    /*
-     * CHECKING INTEGRITY METHODS
-     * keeps the BST consistent and reliable
-     */
-
     // does this binary tree satisfy symmetric order?
     // Note: this test also ensures that data structure is a binary tree since order is strict
     private boolean isBST() {
         return isBST(root, null, null);
     }
+
+    /*
+     * CHECKING INTEGRITY METHODS
+     * keeps the BST consistent and reliable
+     */
 
     // is the tree rooted at x a BST with all keys strictly between min and max
     // (if min or max is null, treat as empty constraint)
@@ -798,13 +668,17 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
         return isBST(node.left, min, node.key) && isBST(node.right, node.key, max);
     }
 
-    private boolean isBalanced(){
+    private boolean isBalanced() {
         return isBalanced(root);
     }
 
-    private boolean isBalanced(Node node){
-        if(node == null){return true;}
-        if(node.balance > 1 || node.balance < -1){return false;}
+    private boolean isBalanced(Node node) {
+        if (node == null) {
+            return true;
+        }
+        if (node.balance > 1 || node.balance < -1) {
+            return false;
+        }
         return isBalanced(node.right) && isBalanced(node.left);
     }
 
@@ -828,5 +702,30 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
             // the key also should be consistent
             if (key.compareTo(select(rank(key))) != 0) return false;
         return true;
+    }
+
+    private class Node {
+        private final Key key;           // sorted by key
+        private Value val;         // associated data
+        private Node left, right;  // left and right subtrees
+        private int balance;       // keeps track of the difference between the height of the childs
+        private int height;        // keeps track of the height of the node
+        private int size;          // number of nodes in subtree
+
+        public Node(Key key, Value val, int size, int balance, int height) {
+            this.key = key;
+            this.val = val;
+            this.size = size;
+            this.balance = balance;
+            this.height = height;
+        }
+
+        public boolean hasRightChild() {
+            return this.right != null;
+        }
+
+        public boolean hasLeftChild() {
+            return this.left != null;
+        }
     }
 }

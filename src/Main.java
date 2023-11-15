@@ -3,6 +3,27 @@ public class Main {
         quebraLinha("A) Permitir a Criação de uma àrvore AVL \n" +
             "F) Para cada inserção de nó, a arvore deve ser impressa \n" +
             "e o nó mostrar o balanceamento");
+        AVLTree<String, Integer> BBST = getAvlTree();
+
+        quebraLinha("B) Os métodos para realizar o balanceamento nesse algoritmo são:");
+        System.out.println("update() -> atualiza os dados de cada nó \n" +
+            "balance() -> verifica se o nó está precisando de balanceamento \n" +
+            "leftRotation() -> aplica o algoritmo de rotação para a esquerda \n" +
+            "rightRotation() -> aplica o algoritmo de rotação para a direita \n" +
+            "OBS: os algortimos de rotação dupla são feitos utilizando a técnica de rotacionar \n" +
+            "um filho primeiro e depois rotacionar o nó principal.");
+
+        quebraLinha("D) TRAVESSIA PÓS, PRÉ E IN ORDER");
+        BBST.printTraversal();
+
+        quebraLinha("E) Impressão da árvore balanceada com o fator de balanceamento em cada nó");
+        BBST.printTree();
+
+        quebraLinha("C) Fator de Balanceamento Resultante da árvore inteira");
+        System.out.println(BBST.balanceFactor());
+    }
+
+    private static AVLTree<String, Integer> getAvlTree() {
         AVLTree<String, Integer> BBST = new AVLTree<>();
         BBST.put("A", 1);
         BBST.put("B", 2);
@@ -22,25 +43,7 @@ public class Main {
         BBST.put("P", 16);
         BBST.put("Q", 17);
         BBST.put("R", 18);
-
-        quebraLinha("B) Os métodos para realizar o balanceamento nesse algoritmo são:");
-        System.out.println("update() -> atualiza os dados de cada nó \n" +
-            "balance() -> verifica se o nó está precisando de balanceamento \n" +
-            "leftRotation() -> aplica o algoritmo de rotação para a esquerda \n" +
-            "rightRotation() -> aplica o algoritmo de rotação para a direita \n" +
-            "OBS: os algortimos de rotação dupla são feitos utilizando a técnica de rotacionar \n" +
-            "um filho primeiro e depois rotacionar o nó principal.");
-
-        quebraLinha("D) TRAVESSIA PÓS, PRÉ E IN ORDER");
-        BBST.printTraversal();
-
-        quebraLinha("E) Impressão da árvore balanceada com o fator de balanceamento em cada nó");
-        BBST.printTree();
-
-        quebraLinha("C) Fator de Balanceamento Resultante da árvore inteira");
-        System.out.println(BBST.balanceFactor());
-
-
+        return BBST;
     }
 
     public static void quebraLinha(String msg) {
