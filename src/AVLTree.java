@@ -3,12 +3,11 @@ import java.util.NoSuchElementException;
 
 public class AVLTree<Key extends Comparable<Key>, Value> {
 
-    public Node root;             // root of BST
-    private final ArrayList<Node> cache = new ArrayList<>();
-    private final ArrayList<Key> NODES_WITH_ONE_CHILD = new ArrayList<>();
+    private Node root;             // root of BST
     private final ArrayList<Key> LRN_POS_ORDEM = new ArrayList<>();
     private final ArrayList<Key> NLR_PRE_ORDEM = new ArrayList<>();
     private final ArrayList<Key> LNR_IN_ORDEM = new ArrayList<>();
+
     /**
      * Initializes an empty symbol table.
      */
@@ -125,7 +124,7 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
     /**
      * returns the level of a node relative to the root
      *
-     * @param node
+     * @param node any node
      * @return the distance from the root
      */
     public int level(Node node) {
@@ -259,8 +258,6 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
         if (key == null) throw new IllegalArgumentException("método get() recebeu uma chave nula");
         if (node == null) return null;
 
-        this.cache.add(node);
-
         int compareKey = key.compareTo(node.key);
         if (compareKey < 0) {
             return get(node.left, key);
@@ -278,8 +275,6 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
     private Node getNode(Node node, Key key) {
         if (key == null) throw new IllegalArgumentException("método getNode() recebeu uma chave nula");
         if (node == null) return null;
-
-        this.cache.add(node);
 
         int compareKey = key.compareTo(node.key);
         if (compareKey < 0) {
@@ -718,14 +713,6 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
             this.size = size;
             this.balance = balance;
             this.height = height;
-        }
-
-        public boolean hasRightChild() {
-            return this.right != null;
-        }
-
-        public boolean hasLeftChild() {
-            return this.left != null;
         }
     }
 }
