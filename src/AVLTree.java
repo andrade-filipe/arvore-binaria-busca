@@ -339,6 +339,8 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
             return;
         }
         root = put(root, key, val);
+        printTree();
+        System.out.println("****************************************");
         assert check();
     }
 
@@ -671,6 +673,10 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
         });
     }
 
+    /**
+     * Mantém os dados da árvore atualizados para saber quando balancear a árvore
+     * @param node nó que está sendo inserido, deletado ou sofrendo rotação
+     */
     private void update(Node node){
         int leftNodeHeight = (node.left == null) ? -1 : node.left.height;
         int rightNodeHeight = (node.right == null) ? -1 : node.right.height;
@@ -680,6 +686,11 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
         node.balance = rightNodeHeight - leftNodeHeight;
     }
 
+    /**
+     * Aplica o algoritmo correto dependendo do caso de balanceamento da árvore
+     * @param node nó desbalanceado
+     * @return o novo nó que vai ocupar o lugar
+     */
     private Node balance(Node node){
         if(node.balance == -2){
             if(node.left.balance <= 0){
@@ -695,6 +706,16 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
             }
         }
         return node;
+    }
+
+    public int balanceFactor(){
+        return balanceFactor(this.root);
+    }
+
+    private int balanceFactor(Node root){
+        assert root.right != null;
+        assert root.left != null;
+        return root.right.height - root.left.height;
     }
 
     private Node leftLeftCase(Node node) {
@@ -715,6 +736,11 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
         return rightRightCase(node);
     }
 
+    /**
+     * Algoritmo de rotação para a esquerda de uma subárvore
+     * @param oldRoot o nó que não está balanceado
+     * @return nova raiz da subárvore
+     */
     private Node leftRotation(Node oldRoot) {
         Node newRoot = oldRoot.right;
         oldRoot.right = newRoot.left;
@@ -725,6 +751,11 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
         return newRoot;
     }
 
+    /**
+     * Algoritmo de rotação para a direita de uma subárvore
+     * @param oldRoot o nó que não está balanceado
+     * @return nova raiz da subárvore
+     */
     private Node rightRotation(Node oldRoot) {
         Node newRoot = oldRoot.left;
         oldRoot.left = newRoot.right;
