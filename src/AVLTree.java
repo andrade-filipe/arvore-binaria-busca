@@ -1,41 +1,50 @@
+import org.w3c.dom.Node;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
-public class ArvoreBinariaBusca<Key extends Comparable<Key>, Value> {
+public class AVLTree<Key extends Comparable<Key>, Value> {
+
+    private class Node {
+        private final Key key;           // sorted by key
+        private Value val;         // associated data
+        private Node left, right;  // left and right subtrees
+        private int balance;       // keeps track of the difference between the height of the childs
+        private int height;        // keeps track of the height of the node
+        private int size;          // number of nodes in subtree
+
+        public Node(Key key, Value val, int size, int balance, int height) {
+            this.key = key;
+            this.val = val;
+            this.size = size;
+            this.balance = balance;
+            this.height = height;
+        }
+
+        public boolean hasRightChild(){
+            return this.right != null;
+        }
+        public boolean hasLeftChild(){
+            return this.left != null;
+        }
+    }
     public Node root;             // root of BST
-
     private ArrayList<Node> cache = new ArrayList<>();
-
     private ArrayList<Key> NODES_WITH_ONE_CHILD = new ArrayList<>();
-
     private ArrayList<Key> LRN_POS_ORDEM = new ArrayList<>();
     private ArrayList<Key> NLR_PRE_ORDEM = new ArrayList<>();
     private ArrayList<Key> LNR_IN_ORDEM = new ArrayList<>();
 
-
-    private class Node {
-        private Key key;           // sorted by key
-        private Value val;         // associated data
-        private Node left, right;  // left and right subtrees
-        private int size;          // number of nodes in subtree
-
-        public Node(Key key, Value val, int size) {
-            this.key = key;
-            this.val = val;
-            this.size = size;
-        }
+    /**
+     * Initializes an empty symbol table.
+     */
+    public AVLTree() {
     }
 
     /*
      * AUXILIARY METHODS
      * these methods are used to create the other methods, they usually return raw information about the BST
      */
-    /**
-     * Initializes an empty symbol table.
-     */
-    public ArvoreBinariaBusca() {
-    }
 
     /**
      * Returns true if this symbol table is empty.
@@ -64,7 +73,7 @@ public class ArvoreBinariaBusca<Key extends Comparable<Key>, Value> {
     /**
      * Returns the number of keys in the symbol table in the given range.
      *
-     * @param low minimum endpoint
+     * @param low  minimum endpoint
      * @param high maximum endpoint
      * @return the number of keys in the symbol table between {@code low}
      * (inclusive) and {@code high} (inclusive)
@@ -125,6 +134,14 @@ public class ArvoreBinariaBusca<Key extends Comparable<Key>, Value> {
         else return max(node.right);
     }
 
+    public int getResultantBalance(){
+        return getResultantBalance(root);
+    }
+
+    private int getResultantBalance(Node root){
+        return root.left.height - root.right.height;
+    }
+
     /**
      * Returns the height of the BST (for debugging).
      *
@@ -141,12 +158,14 @@ public class ArvoreBinariaBusca<Key extends Comparable<Key>, Value> {
 
     /**
      * returns the level of a node relative to the root
+     *
      * @param node
      * @return the distance from the root
      */
     public int level(Node node) {
         return level(root, node);
     }
+
     private int level(Node levelZero, Node node) {
         if (node == levelZero) return 0;
         else if (levelZero == null) return 0;
@@ -159,393 +178,6 @@ public class ArvoreBinariaBusca<Key extends Comparable<Key>, Value> {
         } else {
             return 0;
         }
-    }
-
-    /*
-     * READING, INSERTING AND DELETING METHODS
-     * the operations with the BST happen here
-     */
-
-    /**
-     * Returns the value associated with the given key.
-     *
-     * @param key the key
-     * @return the value associated with the given key if the key is in the symbol table
-     * and {@code null} if the key is not in the symbol table
-     * @throws IllegalArgumentException if {@code key} is {@code null}
-     */
-    public Value get(Key key) {
-        return get(root, key);
-    }
-
-    private Value get(Node node, Key key) {
-        if (key == null) throw new IllegalArgumentException("método get() recebeu uma chave nula");
-        if (node == null) return null;
-
-        this.cache.add(node);
-
-        int compareKey = key.compareTo(node.key);
-        if (compareKey < 0) {
-            return get(node.left, key);
-        }
-        else if (compareKey > 0) {
-            return get(node.right, key);
-        }
-        else {
-            return node.val;
-        }
-    }
-
-    public Node getNode(Key key) {
-        return getNode(root, key);
-    }
-
-    private Node getNode(Node node, Key key) {
-        if (key == null) throw new IllegalArgumentException("método getNode() recebeu uma chave nula");
-        if (node == null) return null;
-
-        this.cache.add(node);
-
-        int compareKey = key.compareTo(node.key);
-        if (compareKey < 0) {
-            return getNode(node.left, key);
-        }
-        else if (compareKey > 0) {
-            return getNode(node.right, key);
-        }
-        else {
-            return node;
-        }
-    }
-
-    /**
-     * Inserts the specified key-value pair into the symbol table, overwriting the old
-     * value with the new value if the symbol table already contains the specified key.
-     * Deletes the specified key (and its associated value) from this symbol table
-     * if the specified value is {@code null}.
-     *
-     * @param key the key
-     * @param val the value
-     * @throws IllegalArgumentException if {@code key} is {@code null}
-     */
-    public void put(Key key, Value val) {
-        if (key == null) throw new IllegalArgumentException("método put() recebeu uma chave nula");
-        if (val == null) {
-            delete(key);
-            return;
-        }
-        root = put(root, key, val);
-        assert check();
-    }
-
-    private Node put(Node node, Key key, Value val) {
-        if (node == null) { return new Node(key, val, 1); }
-        int compareKey = key.compareTo(node.key);
-        if (compareKey < 0) { node.left = put(node.left, key, val); }
-        else if (compareKey > 0) { node.right = put(node.right, key, val); }
-        else {
-            node.val = val;
-        }
-        node.size = 1 + size(node.left) + size(node.right);
-        return node;
-    }
-
-
-    /**
-     * Removes the smallest key and associated value from the symbol table.
-     *
-     * @throws NoSuchElementException if the symbol table is empty
-     */
-    public void deleteMin() {
-        if (isEmpty()) throw new NoSuchElementException("método deleteMin() recebeu uma Árvore vazia");
-        root = deleteMin(root);
-        assert check();
-    }
-
-    private Node deleteMin(Node node) {
-        if (node.left == null) return node.right;
-        node.left = deleteMin(node.left);
-        node.size = size(node.left) + size(node.right) + 1;
-        return node;
-    }
-
-    /**
-     * Removes the largest key and associated value from the symbol table.
-     *
-     * @throws NoSuchElementException if the symbol table is empty
-     */
-    public void deleteMax() {
-        if (isEmpty()) throw new NoSuchElementException("método deleteMax() recebeu uma Árvore vazia");
-        root = deleteMax(root);
-        assert check();
-    }
-
-    private Node deleteMax(Node node) {
-        if (node.right == null) return node.left;
-        node.right = deleteMax(node.right);
-        node.size = size(node.left) + size(node.right) + 1;
-        return node;
-    }
-
-    /**
-     * Removes the specified key and its associated value from this symbol table
-     * (if the key is in this symbol table).
-     *
-     * @param key the key
-     * @throws IllegalArgumentException if {@code key} is {@code null}
-     */
-    public void delete(Key key) {
-        if (key == null) throw new IllegalArgumentException("método delete() recebeu uma chave nula");
-        root = delete(root, key);
-        assert check();
-    }
-
-    private Node delete(Node node, Key key) {
-        if (node == null) return null;
-
-        int compareKey = key.compareTo(node.key);
-        if (compareKey < 0) node.left = delete(node.left, key);
-        else if (compareKey > 0) node.right = delete(node.right, key);
-        else {
-            if (node.right == null) return node.left;
-            if (node.left == null) return node.right;
-            Node t = node;
-            node = min(t.right);
-            node.right = deleteMin(t.right);
-            node.left = t.left;
-        }
-        node.size = size(node.left) + size(node.right) + 1;
-        return node;
-    }
-
-    /*
-    * SPECIAL DATA Methods
-    * data about the BST, but you can filter them
-    *
-    */
-
-    /**
-     * ME parte 1
-     * Prints important information about the BST
-     * for study purposes
-     * @param key
-     */
-    public void printNodeData(Key key) {
-        Node node = getNode(key);
-
-        System.out.println("Altura: " + height(node));
-        System.out.println("Nível: " + level(node) );
-        System.out.println("Profundidade: " + level(node));
-
-        Node parentNode = root;
-
-        for (int i = 0; i < this.cache.size() - 1; i++) {
-            parentNode = this.cache.get(i);
-            if (parentNode.equals(node)){
-                parentNode = this.cache.get(i - 1);
-            }
-        }
-
-        if (parentNode.right == node){
-            System.out.println("Pai: " + parentNode.key.toString());
-            System.out.println("É filho direito");
-        } else if (parentNode.left == node) {
-            System.out.println("Pai: " + parentNode.key.toString());
-            System.out.println("É filho esquerdo");
-        } else if (parentNode == root) {
-            System.out.println("Não tem pai");
-            System.out.println("Nó raiz");
-        } else {
-            System.out.println("Erro");
-        }
-        System.out.println("Valor do Node: " + node.val);
-    }
-
-    //ME PARTE 2
-
-    /**
-     * MÉTODO 1 - PERCORRER ARVORE
-     * Prints all 3 different types of traversals in a binary tree
-     */
-    public void printTraversal() {
-        if(isEmpty()) throw new NoSuchElementException("método printTraversal() não encontrou árvore alguma");
-
-        nlr(root);
-        System.out.println("Pré-Ordem(NLR): " + this.NLR_PRE_ORDEM);
-        lnr(root);
-        System.out.println("In-Ordem(LNR): " + this.LNR_IN_ORDEM);
-        lrn(root);
-        System.out.println("Pós-Ordem(LRN): " + this.LRN_POS_ORDEM);
-    }
-
-    /**
-     * MÉTODO 1 - PERCORRER ARVORE
-     * PREORDER TRAVERSAL OF THE TREE (NLR)
-     * @param node
-     */
-    private void nlr(Node node) { //PRE-ORDEM
-        if(node == null) {
-            return;
-        }
-
-        this.NLR_PRE_ORDEM.add(node.key);
-
-        //left subtree
-        nlr(node.left);
-
-        //right subtree
-        nlr(node.right);
-
-    }
-
-    /**
-     * MÉTODO 1 - PERCORRER ARVORE
-     * INORDER TRAVERSAL OF THE TREE (LNR)
-     * @param node
-     */
-    private void lnr(Node node) { //IN-ORDEM
-        if (node == null) {
-            return;
-        }
-        //left subtree
-        lnr(node.left);
-
-        this.LNR_IN_ORDEM.add(node.key);
-
-        //right subtree
-        lnr(node.right);
-    }
-
-    /**
-     * MÉTODO 1 - PERCORRER ARVORE
-     * POSTORDER TRAVERSAL OF THE TREE (LRN)
-     * @param node
-     */
-    private void lrn(Node node) { //POS-ORDEM
-        if (node == null) {
-            return;
-        }
-        //left subtree
-        lrn(node.left);
-
-        //right subtree
-        lrn(node.right);
-
-        this.LRN_POS_ORDEM.add(node.key);
-    }
-
-    /**
-     * MÉTODO 2 - Imprimir Desenho da árvore
-     * Imprime todos os elementos da arvore identados
-     */
-    public void printTree(){
-        System.out.println(treeStringBuilder(root));
-    }
-
-    private void treeStringBuilder(StringBuilder sb,
-                                   String padding,
-                                   String pointer,
-                                   Node node,
-                                   boolean hasRight){
-        if (node != null) {
-            sb.append("\n");
-            sb.append(padding);
-            sb.append(pointer);
-            sb.append(node.key);
-
-            StringBuilder paddingBuilder = new StringBuilder(padding);
-            if (hasRight) {
-                paddingBuilder.append("│  ");
-            } else {
-                paddingBuilder.append("   ");
-            }
-
-            String paddingForBoth = paddingBuilder.toString();
-            String pointerForRight = "└──";
-            String pointerForLeft = (node.right != null) ? "├──" : "└──";
-
-            treeStringBuilder(sb,paddingForBoth, pointerForLeft, node.left, node.right != null);
-            treeStringBuilder(sb,paddingForBoth, pointerForRight, node.right,false);
-        }
-    }
-
-    private String treeStringBuilder(Node root) {
-        if (root == null) {
-            return "";
-        }
-
-        StringBuilder sb = new StringBuilder();
-        sb.append(root.key);
-
-        String pointerRight = "└──";
-        String pointerLeft = (root.right != null) ? "├──" : "└──";
-
-        treeStringBuilder(sb, "", pointerLeft, root.left, root.right != null);
-        treeStringBuilder(sb, "", pointerRight, root.right, false);
-
-        return sb.toString();
-    }
-
-    /**
-     * Método 3 - Tamanho da árvore de forma recursiva
-     * counting the number of nodes, but with recursion
-     * @return number of nodes in the BST
-     */
-    public int recursiveCount() {
-        return recursiveCount(root);
-    }
-    private int recursiveCount(Node node) {
-        if (node == null) {
-            return 0;
-        }
-        return 1 + recursiveCount(node.left) + recursiveCount(node.right);
-    }
-
-    /**
-     * MÉTODO 6 - CLASSIFICAR ÁRVORE
-     * Dizer se é binária ou Binária de busca
-     */
-    public boolean isBinarySearchTree() {
-        return isBST();
-    }
-
-    /**
-     * Método 7 - NÓS COM SOMENTE UM FILHO
-     * Prints an array with the nodes that have only one child
-     * @return array with all the keys of the nodes that have only one child
-     */
-    public String printNodesWithOnlyOneChild() {
-        nodesWithOnlyOneChild();
-        return this.NODES_WITH_ONE_CHILD.toString();
-    }
-
-    /**
-     * Método 7 - NÓS COM SOMENTE UM FILHO
-     * prints the size of the array nodesWithOnlyOneChild
-     * @return Integer with the count
-     */
-    public int sizeNodesWithOnlyOneChild() {
-        nodesWithOnlyOneChild();
-        return this.NODES_WITH_ONE_CHILD.size();
-    }
-
-    /**
-     * Método 7 - NÓS COM SOMENTE UM FILHO
-     * Maps all nodes with One child
-     */
-    private void nodesWithOnlyOneChild() {
-        this.NODES_WITH_ONE_CHILD.clear(); //making sure the array is empty
-        keys().forEach(key -> {
-            Node node = getNode(key);
-
-            boolean hasChild = !(node.left == null && node.right == null);
-            boolean andOnlyOneChild = node.left == null || node.right == null;
-            boolean hasOnlyOneChild = hasChild && andOnlyOneChild;
-
-            if (hasOnlyOneChild) {
-                this.NODES_WITH_ONE_CHILD.add(node.key);
-            }
-        });
     }
 
     /**
@@ -600,13 +232,15 @@ public class ArvoreBinariaBusca<Key extends Comparable<Key>, Value> {
     /**
      * Returns all keys in the symbol table in ascending order,
      * as an {@code Iterable}.
-     * To iterate over all of the keys in the symbol table named {@code st},
+     * To iterate over all the keys in the symbol table named {@code st},
      * use the foreach notation: {@code for (Key key : st.keys())}.
      *
      * @return all keys in the symbol table in ascending order
      */
     public Iterable<Key> keys() {
-        if (isEmpty()) { return new ArrayList<>(); }
+        if (isEmpty()) {
+            return new ArrayList<>();
+        }
         return keys(min(), max());
     }
 
@@ -638,11 +272,469 @@ public class ArvoreBinariaBusca<Key extends Comparable<Key>, Value> {
         if (compareLow <= 0 && compareHigh >= 0) list.add(node.key);
         if (compareHigh > 0) keys(node.right, list, low, high);
     }
+    /*
+     * READING, INSERTING AND DELETING METHODS
+     * the operations with the BST happen here
+     */
+
+    /**
+     * Returns the value associated with the given key.
+     *
+     * @param key the key
+     * @return the value associated with the given key if the key is in the symbol table
+     * and {@code null} if the key is not in the symbol table
+     * @throws IllegalArgumentException if {@code key} is {@code null}
+     */
+    public Value get(Key key) {
+        return get(root, key);
+    }
+    private Value get(Node node, Key key) {
+        if (key == null) throw new IllegalArgumentException("método get() recebeu uma chave nula");
+        if (node == null) return null;
+
+        this.cache.add(node);
+
+        int compareKey = key.compareTo(node.key);
+        if (compareKey < 0) {
+            return get(node.left, key);
+        } else if (compareKey > 0) {
+            return get(node.right, key);
+        } else {
+            return node.val;
+        }
+    }
+    public Node getNode(Key key) {
+        return getNode(root, key);
+    }
+    private Node getNode(Node node, Key key) {
+        if (key == null) throw new IllegalArgumentException("método getNode() recebeu uma chave nula");
+        if (node == null) return null;
+
+        this.cache.add(node);
+
+        int compareKey = key.compareTo(node.key);
+        if (compareKey < 0) {
+            return getNode(node.left, key);
+        } else if (compareKey > 0) {
+            return getNode(node.right, key);
+        } else {
+            return node;
+        }
+    }
+
+    /**
+     * Inserts the specified key-value pair into the symbol table, overwriting the old
+     * value with the new value if the symbol table already contains the specified key.
+     * Deletes the specified key (and its associated value) from this symbol table
+     * if the specified value is {@code null}.
+     *
+     * @param key the key
+     * @param val the value
+     * @throws IllegalArgumentException if {@code key} is {@code null}
+     */
+    public void put(Key key, Value val) {
+        if (key == null) throw new IllegalArgumentException("método put() recebeu uma chave nula");
+        if (val == null) {
+            delete(key);
+            return;
+        }
+        root = put(root, key, val);
+        assert check();
+    }
+
+    private Node put(Node node, Key key, Value val) {
+        if (node == null) {
+            return new Node(key, val, 1,0, 0);
+        }
+        int compareKey = key.compareTo(node.key);
+        if (compareKey < 0) {
+            node.left = put(node.left, key, val);
+        } else if (compareKey > 0) {
+            node.right = put(node.right, key, val);
+        } else {
+            node.val = val;
+        }
+        node.size = 1 + size(node.left) + size(node.right);
+        update(node);
+        return balance(node);
+    }
+
+    /**
+     * Removes the smallest key and associated value from the symbol table.
+     *
+     * @throws NoSuchElementException if the symbol table is empty
+     */
+    public void deleteMin() {
+        if (isEmpty()) throw new NoSuchElementException("método deleteMin() recebeu uma Árvore vazia");
+        root = deleteMin(root);
+        assert check();
+    }
+
+    private Node deleteMin(Node node) {
+        if (node.left == null) return node.right;
+        node.left = deleteMin(node.left);
+        node.size = size(node.left) + size(node.right) + 1;
+        return node;
+    }
+
+    /**
+     * Removes the largest key and associated value from the symbol table.
+     *
+     * @throws NoSuchElementException if the symbol table is empty
+     */
+    public void deleteMax() {
+        if (isEmpty()) throw new NoSuchElementException("método deleteMax() recebeu uma Árvore vazia");
+        root = deleteMax(root);
+        assert check();
+    }
+    private Node deleteMax(Node node) {
+        if (node.right == null) return node.left;
+        node.right = deleteMax(node.right);
+        node.size = size(node.left) + size(node.right) + 1;
+        return node;
+    }
+
+    /**
+     * Removes the specified key and its associated value from this symbol table
+     * (if the key is in this symbol table).
+     *
+     * @param key the key
+     * @throws IllegalArgumentException if {@code key} is {@code null}
+     */
+    public void delete(Key key) {
+        if (key == null) throw new IllegalArgumentException("método delete() recebeu uma chave nula");
+        root = delete(root, key);
+        assert check();
+    }
+
+    private Node delete(Node node, Key key) {
+        if (node == null) return null;
+
+        int compareKey = key.compareTo(node.key);
+        if (compareKey < 0) node.left = delete(node.left, key);
+        else if (compareKey > 0) node.right = delete(node.right, key);
+        else {
+            if (node.right == null) return node.left;
+            if (node.left == null) return node.right;
+            Node t = node;
+            node = min(t.right);
+            node.right = deleteMin(t.right);
+            node.left = t.left;
+        }
+        node.size = size(node.left) + size(node.right) + 1;
+
+        update(node);
+        return balance(node);
+    }
+
+    /**
+     * ME parte 1
+     * Prints important information about the BST
+     * for study purposes
+     *
+     * @param key a key to a node of the tree
+     */
+    public void printNodeData(Key key) {
+        Node node = getNode(key);
+
+        System.out.println("Altura: " + height(node));
+        System.out.println("Nível: " + level(node));
+        System.out.println("Profundidade: " + level(node));
+
+        Node parentNode = root;
+
+        for (int i = 0; i < this.cache.size() - 1; i++) {
+            parentNode = this.cache.get(i);
+            if (parentNode.equals(node)) {
+                parentNode = this.cache.get(i - 1);
+            }
+        }
+
+        if (parentNode.right == node) {
+            System.out.println("Pai: " + parentNode.key.toString());
+            System.out.println("É filho direito");
+        } else if (parentNode.left == node) {
+            System.out.println("Pai: " + parentNode.key.toString());
+            System.out.println("É filho esquerdo");
+        } else if (parentNode == root) {
+            System.out.println("Não tem pai");
+            System.out.println("Nó raiz");
+        } else {
+            System.out.println("Erro");
+        }
+        System.out.println("Valor do Node: " + node.val);
+    }
 
     /*
-    * CHECKING INTEGRITY METHODS
-    * keeps the BST consistent and reliable
+     * SPECIAL DATA Methods
+     * data about the BST, but you can filter them
+     *
      */
+
+    /**
+     * MÉTODO 1 - PERCORRER ARVORE
+     * Prints all 3 different types of traversals in a binary tree
+     */
+    public void printTraversal() {
+        if (isEmpty()) throw new NoSuchElementException("método printTraversal() não encontrou árvore alguma");
+
+        nlr(root);
+        System.out.println("Pré-Ordem(NLR): " + this.NLR_PRE_ORDEM);
+        lnr(root);
+        System.out.println("In-Ordem(LNR): " + this.LNR_IN_ORDEM);
+        lrn(root);
+        System.out.println("Pós-Ordem(LRN): " + this.LRN_POS_ORDEM);
+    }
+
+    //ME PARTE 2
+
+    /**
+     * MÉTODO 1 - PERCORRER ARVORE
+     * PREORDER TRAVERSAL OF THE TREE (NLR)
+     *
+     * @param node a node of the tree
+     */
+    private void nlr(Node node) { //PRE-ORDEM
+        if (node == null) {
+            return;
+        }
+
+        this.NLR_PRE_ORDEM.add(node.key);
+
+        //left subtree
+        nlr(node.left);
+
+        //right subtree
+        nlr(node.right);
+
+    }
+
+    /**
+     * MÉTODO 1 - PERCORRER ARVORE
+     * INORDER TRAVERSAL OF THE TREE (LNR)
+     *
+     * @param node a node of the tree
+     */
+    private void lnr(Node node) { //IN-ORDEM
+        if (node == null) {
+            return;
+        }
+        //left subtree
+        lnr(node.left);
+
+        this.LNR_IN_ORDEM.add(node.key);
+
+        //right subtree
+        lnr(node.right);
+    }
+
+    /**
+     * MÉTODO 1 - PERCORRER ARVORE
+     * POSTORDER TRAVERSAL OF THE TREE (LRN)
+     *
+     * @param node a node of the tree
+     */
+    private void lrn(Node node) { //POS-ORDEM
+        if (node == null) {
+            return;
+        }
+        //left subtree
+        lrn(node.left);
+
+        //right subtree
+        lrn(node.right);
+
+        this.LRN_POS_ORDEM.add(node.key);
+    }
+
+    /**
+     * MÉTODO 2 - Imprimir Desenho da árvore
+     * Imprime todos os elementos da árvore identados
+     */
+    public void printTree() {
+        System.out.println(treeStringBuilder(root));
+    }
+
+    private void treeStringBuilder(StringBuilder sb,
+                                   String padding,
+                                   String pointer,
+                                   Node node,
+                                   boolean hasRight) {
+        if (node != null) {
+            sb.append("\n");
+            sb.append(padding);
+            sb.append(pointer);
+            sb.append(node.key);
+            sb.append("[");
+            sb.append(node.balance);
+            sb.append("]");
+
+            StringBuilder paddingBuilder = new StringBuilder(padding);
+            if (hasRight) {
+                paddingBuilder.append("│  ");
+            } else {
+                paddingBuilder.append("   ");
+            }
+
+            String paddingForBoth = paddingBuilder.toString();
+            String pointerForRight = "└──";
+            String pointerForLeft = (node.right != null) ? "├──" : "└──";
+
+            treeStringBuilder(sb, paddingForBoth, pointerForLeft, node.left, node.right != null);
+            treeStringBuilder(sb, paddingForBoth, pointerForRight, node.right, false);
+        }
+    }
+
+    private String treeStringBuilder(Node root) {
+        if (root == null) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(root.key);
+        sb.append("[");
+        sb.append(root.balance);
+        sb.append("]");
+
+        String pointerRight = "└──";
+        String pointerLeft = (root.right != null) ? "├──" : "└──";
+
+        treeStringBuilder(sb, "", pointerLeft, root.left, root.right != null);
+        treeStringBuilder(sb, "", pointerRight, root.right, false);
+
+        return sb.toString();
+    }
+
+    /**
+     * Método 3 - Tamanho da árvore de forma recursiva
+     * counting the number of nodes, but with recursion
+     *
+     * @return number of nodes in the BST
+     */
+    public int recursiveCount() {
+        return recursiveCount(root);
+    }
+
+    private int recursiveCount(Node node) {
+        if (node == null) {
+            return 0;
+        }
+        return 1 + recursiveCount(node.left) + recursiveCount(node.right);
+    }
+
+    /**
+     * MÉTODO 6 - CLASSIFICAR ÁRVORE
+     * Dizer se é binária ou Binária de busca
+     */
+    public boolean isBinarySearchTree() {
+        return isBST();
+    }
+
+    /**
+     * Método 7 - NÓS COM SOMENTE UM FILHO
+     * Prints an array with the nodes that have only one child
+     *
+     * @return array with all the keys of the nodes that have only one child
+     */
+    public String printNodesWithOnlyOneChild() {
+        nodesWithOnlyOneChild();
+        return this.NODES_WITH_ONE_CHILD.toString();
+    }
+
+    /**
+     * Método 7 - NÓS COM SOMENTE UM FILHO
+     * prints the size of the array nodesWithOnlyOneChild
+     *
+     * @return Integer with the count
+     */
+    public int sizeNodesWithOnlyOneChild() {
+        nodesWithOnlyOneChild();
+        return this.NODES_WITH_ONE_CHILD.size();
+    }
+
+    /**
+     * Método 7 - NÓS COM SOMENTE UM FILHO
+     * Maps all nodes with One child
+     */
+    private void nodesWithOnlyOneChild() {
+        this.NODES_WITH_ONE_CHILD.clear(); //making sure the array is empty
+        keys().forEach(key -> {
+            Node node = getNode(key);
+
+            boolean hasChild = !(node.left == null && node.right == null);
+            boolean andOnlyOneChild = node.left == null || node.right == null;
+            boolean hasOnlyOneChild = hasChild && andOnlyOneChild;
+
+            if (hasOnlyOneChild) {
+                this.NODES_WITH_ONE_CHILD.add(node.key);
+            }
+        });
+    }
+
+    private void update(Node node){
+        int leftNodeHeight = (node.left == null) ? -1 : node.left.height;
+        int rightNodeHeight = (node.right == null) ? -1 : node.right.height;
+
+        node.height = height(node);
+
+        node.balance = rightNodeHeight - leftNodeHeight;
+    }
+
+    private Node balance(Node node){
+        if(node.balance == -2){
+            if(node.left.balance <= 0){
+                return leftLeftCase(node);
+            } else {
+                return leftRightCase(node);
+            }
+        } else if(node.balance == 2){
+            if(node.right.balance >= 0){
+                return rightRightCase(node);
+            } else {
+                return rightLeftCase(node);
+            }
+        }
+        return node;
+    }
+
+    private Node leftLeftCase(Node node) {
+        return rightRotation(node);
+    }
+
+    private Node leftRightCase(Node node) {
+        node.left = leftRotation(node.left);
+        return leftLeftCase(node);
+    }
+
+    private Node rightRightCase(Node node) {
+        return leftRotation(node);
+    }
+
+    private Node rightLeftCase(Node node) {
+        node.right = rightRotation(node.right);
+        return rightRightCase(node);
+    }
+
+    private Node leftRotation(Node oldRoot) {
+        Node newRoot = oldRoot.right;
+        oldRoot.right = newRoot.left;
+        newRoot.left = oldRoot;
+
+        update(oldRoot);
+        update(newRoot);
+        return newRoot;
+    }
+
+    private Node rightRotation(Node oldRoot) {
+        Node newRoot = oldRoot.left;
+        oldRoot.left = newRoot.right;
+        newRoot.right = oldRoot;
+
+        update(oldRoot);
+        update(newRoot);
+        return newRoot;
+    }
+
     /*************************************************************************
      *  Check integrity of BST data structure.
      ***************************************************************************/
@@ -650,8 +742,14 @@ public class ArvoreBinariaBusca<Key extends Comparable<Key>, Value> {
         if (!isBST()) System.out.println("Not in symmetric order");
         if (!isSizeConsistent()) System.out.println("Subtree counts not consistent");
         if (!isRankConsistent()) System.out.println("Ranks not consistent");
-        return isBST() && isSizeConsistent() && isRankConsistent();
+        if (!isBalanced()) System.out.println("Is not Balanced");
+        return isBST() && isSizeConsistent() && isRankConsistent() && isBalanced();
     }
+
+    /*
+     * CHECKING INTEGRITY METHODS
+     * keeps the BST consistent and reliable
+     */
 
     // does this binary tree satisfy symmetric order?
     // Note: this test also ensures that data structure is a binary tree since order is strict
@@ -667,6 +765,16 @@ public class ArvoreBinariaBusca<Key extends Comparable<Key>, Value> {
         if (min != null && node.key.compareTo(min) <= 0) return false;
         if (max != null && node.key.compareTo(max) >= 0) return false;
         return isBST(node.left, min, node.key) && isBST(node.right, node.key, max);
+    }
+
+    private boolean isBalanced(){
+        return isBalanced(root);
+    }
+
+    private boolean isBalanced(Node node){
+        if(node == null){return true;}
+        if(node.balance > 1 || node.balance < -1){return false;}
+        return isBalanced(node.right) && isBalanced(node.left);
     }
 
     // are the size fields correct?
