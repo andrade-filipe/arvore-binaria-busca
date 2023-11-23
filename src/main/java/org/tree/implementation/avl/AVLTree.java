@@ -1,3 +1,5 @@
+package org.tree.implementation.avl;
+
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
@@ -303,8 +305,6 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
             return;
         }
         root = put(root, key, val);
-        printTree();
-        System.out.println("****************************************");
         assert check();
     }
 
@@ -716,3 +716,4 @@ public class AVLTree<Key extends Comparable<Key>, Value> {
         }
     }
 }
+
