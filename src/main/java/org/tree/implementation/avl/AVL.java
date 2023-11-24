@@ -5,10 +5,11 @@ import org.tree.implementation.adapter.Tree;
 import java.util.ArrayList;
 
 public class AVL<T extends Comparable<T>> implements Tree<T> {
-    private Node<T> root;
     private final ArrayList<T> LRN_POS_ORDEM = new ArrayList<>();
     private final ArrayList<T> NLR_PRE_ORDEM = new ArrayList<>();
     private final ArrayList<T> LNR_IN_ORDEM = new ArrayList<>();
+    private Node<T> root;
+
     @Override
     public Tree<T> insert(T data) {
         root = insert(data, root);

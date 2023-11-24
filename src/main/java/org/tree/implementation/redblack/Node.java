@@ -4,8 +4,8 @@ import lombok.Data;
 import lombok.NonNull;
 import lombok.ToString;
 
-import static org.tree.implementation.redblack.Color.RED;
 import static org.tree.implementation.redblack.Color.BLACK;
+import static org.tree.implementation.redblack.Color.RED;
 
 @Data
 public class Node<T extends Comparable<T>> {

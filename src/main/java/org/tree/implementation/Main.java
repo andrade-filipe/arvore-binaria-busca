@@ -1,8 +1,8 @@
 package org.tree.implementation;
 
+import org.tree.implementation.adapter.Tree;
 import org.tree.implementation.avl.AVL;
 import org.tree.implementation.redblack.RedBlack;
-import org.tree.implementation.adapter.Tree;
 
 public class Main {
     public static void main(String[] args) {
@@ -13,13 +13,13 @@ public class Main {
         redBlackTree.traverse();
 
         System.out.println("ÁRVORE AVL");
-        var avl= getAvlTree();
+        var avl = getAvlTree();
 
         avl.printTree();
         avl.traverse();
     }
 
-    private static Tree<String> getAvlTree(){
+    private static Tree<String> getAvlTree() {
         Tree<String> avlTree = new AVL<>();
         avlTree
             .insert("A")
@@ -39,23 +39,23 @@ public class Main {
         return avlTree;
     }
 
-    private static Tree<String> getRedBlackTree(){
+    private static Tree<String> getRedBlackTree() {
         Tree<String> redBlackTree = new RedBlack<>();
         redBlackTree
-                .insert("A")
-                .insert("B")
-                .insert("C")
-                .insert("D")
-                .insert("E")
-                .insert("F")
-                .insert("G")
-                .insert("H")
-                .insert("I")
-                .insert("J")
-                .insert("K")
-                .insert("L")
-                .insert("M")
-                .insert("N");
+            .insert("A")
+            .insert("B")
+            .insert("C")
+            .insert("D")
+            .insert("E")
+            .insert("F")
+            .insert("G")
+            .insert("H")
+            .insert("I")
+            .insert("J")
+            .insert("K")
+            .insert("L")
+            .insert("M")
+            .insert("N");
         return redBlackTree;
     }
 }

@@ -6,10 +6,10 @@ import java.util.ArrayList;
 
 public class BinarySearchTree<T extends Comparable<T>> implements Tree<T> {
 
-    private Node<T> root;
     private final ArrayList<T> LRN_POS_ORDEM = new ArrayList<>();
     private final ArrayList<T> NLR_PRE_ORDEM = new ArrayList<>();
     private final ArrayList<T> LNR_IN_ORDEM = new ArrayList<>();
+    private Node<T> root;
 
     @Override
     public Tree<T> insert(T data) {
@@ -166,6 +166,7 @@ public class BinarySearchTree<T extends Comparable<T>> implements Tree<T> {
             treeStringBuilder(sb, paddingForBoth, pointerForRight, node.getRightChild(), false);
         }
     }
+
     private void nlr(Node node) { //PRE-ORDEM
         if (node == null) {
             return;

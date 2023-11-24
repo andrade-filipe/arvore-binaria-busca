@@ -8,10 +8,10 @@ import static org.tree.implementation.redblack.Color.BLACK;
 import static org.tree.implementation.redblack.Color.RED;
 
 public class RedBlack<T extends Comparable<T>> implements Tree<T> {
-    private Node<T> root;
     private final ArrayList<T> LRN_POS_ORDEM = new ArrayList<>();
     private final ArrayList<T> NLR_PRE_ORDEM = new ArrayList<>();
     private final ArrayList<T> LNR_IN_ORDEM = new ArrayList<>();
+    private Node<T> root;
 
     @Override
     public Tree<T> insert(T data) {
@@ -20,6 +20,7 @@ public class RedBlack<T extends Comparable<T>> implements Tree<T> {
         recolorAndRotate(node);
         return this;
     }
+
     @Override
     public void delete(T data) {
         root = delete(data, root);
