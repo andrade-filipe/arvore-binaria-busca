@@ -93,8 +93,26 @@ public class RedBlack<T extends Comparable<T>> implements Tree<T> {
     }
 
     private Node<T> delete(T data, Node<T> node) throws RuntimeException {
-        //TODO:Método de deletar nós na árvore red-black
-        return new Node<T>((T)"Method not implemented");
+        //TODO:Modificar método padrão de deletar para árvore red-black.
+        if (node == null) {
+            return null;
+        }
+        if (data.compareTo(node.getData()) < 0) {
+            node.setLeftChild(delete(data, node.getLeftChild()));
+        } else if (data.compareTo(node.getData()) > 0) {
+            node.setRightChild(delete(data, node.getRightChild()));
+        } else {
+            // One child or No children
+            if (node.getLeftChild() == null) {
+                return node.getRightChild();
+            } else if (node.getRightChild() == null) {
+                return node.getLeftChild();
+            }
+            // Two children
+            node.setData(getMax(node.getLeftChild()));
+            node.setLeftChild(delete(node.getData(), node.getLeftChild()));
+        }
+        return node;
     }
 
     private void recolorAndRotate(Node<T> node) {
