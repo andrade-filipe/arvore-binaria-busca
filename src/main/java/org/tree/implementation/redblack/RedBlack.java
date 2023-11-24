@@ -22,12 +22,12 @@ public class RedBlack<T extends Comparable<T>> implements Tree<T> {
     }
     @Override
     public void delete(T data) {
-
+        root = delete(data, root);
     }
 
     @Override
     public T get(T data) {
-        return null;
+        return get(root, data);
     }
 
     @Override
@@ -79,6 +79,22 @@ public class RedBlack<T extends Comparable<T>> implements Tree<T> {
             node.getRightChild().setParent(node);
         }
         return node;
+    }
+
+    private T get(Node node, T data) {
+        int compareKey = data.compareTo((T) node.getData());
+        if (compareKey < 0) {
+            return get(node.getLeftChild(), data);
+        } else if (compareKey > 0) {
+            return get(node.getRightChild(), data);
+        } else {
+            return (T) node.getData();
+        }
+    }
+
+    private Node<T> delete(T data, Node<T> node) throws RuntimeException {
+        //TODO:Método de deletar nós na árvore red-black
+        return new Node<T>((T)"Method not implemented");
     }
 
     private void recolorAndRotate(Node<T> node) {
@@ -231,7 +247,7 @@ public class RedBlack<T extends Comparable<T>> implements Tree<T> {
             return;
         }
 
-        this.NLR_PRE_ORDEM.add((T)node.getData());
+        this.NLR_PRE_ORDEM.add((T) node.getData());
 
         //left subtree
         nlr(node.getLeftChild());
@@ -251,7 +267,7 @@ public class RedBlack<T extends Comparable<T>> implements Tree<T> {
         //right subtree
         lrn(node.getRightChild());
 
-        this.LRN_POS_ORDEM.add((T)node.getData());
+        this.LRN_POS_ORDEM.add((T) node.getData());
     }
 
     private void lnr(Node node) { //IN-ORDEM
@@ -261,7 +277,7 @@ public class RedBlack<T extends Comparable<T>> implements Tree<T> {
         //left subtree
         lnr(node.getLeftChild());
 
-        this.LNR_IN_ORDEM.add((T)node.getData());
+        this.LNR_IN_ORDEM.add((T) node.getData());
 
         //right subtree
         lnr(node.getRightChild());

@@ -11,14 +11,12 @@ public class Main {
 
         redBlackTree.printTree();
         redBlackTree.traverse();
-        System.out.println(redBlackTree.get("A"));
 
         System.out.println("ÁRVORE AVL");
         var avl= getAvlTree();
 
         avl.printTree();
         avl.traverse();
-        System.out.println(avl.get("A"));
     }
 
     private static Tree<String> getAvlTree(){
@@ -35,7 +33,9 @@ public class Main {
             .insert("I")
             .insert("J")
             .insert("K")
-            .insert("L");
+            .insert("L")
+            .insert("M")
+            .insert("N");
         return avlTree;
     }
 
@@ -53,7 +53,9 @@ public class Main {
                 .insert("I")
                 .insert("J")
                 .insert("K")
-                .insert("L");
+                .insert("L")
+                .insert("M")
+                .insert("N");
         return redBlackTree;
     }
 }

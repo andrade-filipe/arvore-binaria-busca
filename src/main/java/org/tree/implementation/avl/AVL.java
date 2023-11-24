@@ -87,14 +87,6 @@ public class AVL<T extends Comparable<T>> implements Tree<T> {
         }
     }
 
-    private void updateHeight(Node<T> node) {
-        int maxHeight = Math.max(
-            height(node.getLeftChild()),
-            height(node.getRightChild())
-        );
-        node.setHeight(maxHeight + 1);
-    }
-
     private Node<T> delete(T data, Node<T> node) {
         if (node == null) {
             return null;
@@ -116,6 +108,14 @@ public class AVL<T extends Comparable<T>> implements Tree<T> {
         }
         updateHeight(node);
         return applyRotation(node);
+    }
+
+    private void updateHeight(Node<T> node) {
+        int maxHeight = Math.max(
+            height(node.getLeftChild()),
+            height(node.getRightChild())
+        );
+        node.setHeight(maxHeight + 1);
     }
 
     private Node<T> applyRotation(Node<T> node) {
