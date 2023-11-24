@@ -31,40 +31,26 @@ public class Main {
     private static Tree<String> getAvlTree() {
         Tree<String> avlTree = new AVL<>();
         avlTree
-            .insert("A")
-            .insert("B")
-            .insert("C")
-            .insert("D")
             .insert("E")
             .insert("F")
             .insert("G")
-            .insert("H")
-            .insert("I")
-            .insert("J")
-            .insert("K")
-            .insert("L")
-            .insert("M")
-            .insert("N");
+            .insert("A")
+            .insert("B")
+            .insert("C")
+            .insert("D");
         return avlTree;
     }
 
     private static Tree<String> getRedBlackTree() {
         Tree<String> redBlackTree = new RedBlack<>();
         redBlackTree
-            .insert("A")
-            .insert("B")
-            .insert("C")
-            .insert("D")
             .insert("E")
             .insert("F")
             .insert("G")
-            .insert("H")
-            .insert("I")
-            .insert("J")
-            .insert("K")
-            .insert("L")
-            .insert("M")
-            .insert("N");
+            .insert("A")
+            .insert("B")
+            .insert("C")
+            .insert("D");
         return redBlackTree;
     }
 
@@ -72,20 +58,13 @@ public class Main {
         Tree<String> binarySearchTree = new BinarySearchTree<>();
 
         binarySearchTree
-            .insert("A")
-            .insert("B")
-            .insert("C")
-            .insert("D")
             .insert("E")
             .insert("F")
             .insert("G")
-            .insert("H")
-            .insert("I")
-            .insert("J")
-            .insert("K")
-            .insert("L")
-            .insert("M")
-            .insert("N");
+            .insert("A")
+            .insert("B")
+            .insert("C")
+            .insert("D");
         return binarySearchTree;
     }
 }
